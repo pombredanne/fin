@@ -85,7 +85,7 @@ func main() {
 	check(err)
 
 	var entries []*qif.Entry
-	for _, arg := range flag.Args()[1:] {
+	for _, arg := range flag.Args() {
 		entries = parse(arg, entries)
 	}
 
