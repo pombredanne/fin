@@ -30,6 +30,17 @@ cmp = (a, b) ->
 
 parseDate = d3.time.format('%Y/%m/%d').parse
 formatAmount = (a) -> d3.format('$.2f')(a/100)
+approx = (amt) ->
+  prefix = '$'
+  dollars = parseInt(amt / 100)
+  if dollars < 0
+    dollars = -dollars
+    prefix += '-'
+  if dollars > 1000
+    return prefix + (dollars / 1000).toFixed(1) + 'k'
+  else
+    return prefix + dollars
+
 
 R = React.DOM
 
@@ -166,14 +177,19 @@ Summary = React.createClass
 
     R.div null,
       R.div null,
+        'dates span '
+        @props.entries[0].date
+        ' -- '
+        @props.entries[@props.entries.length - 1].date
+      R.div null,
         'all tags:'
         for t in @props.tags
           ' ' + t
       for b in buckets
         [amount, tag] = b
         total += amount
-        R.div {key:tag}, (formatAmount(amount) + ': ' + tag)
-      '=> ' + formatAmount(total)
+        R.div {key:tag}, (approx(amount) + ': ' + tag)
+      '=> ' + approx(total)
 
 
 AutoC = React.createClass
