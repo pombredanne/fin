@@ -76,7 +76,7 @@ Ledger = React.createClass
           R.tr {key:i},
             R.td {className:'date'}, e.date
             R.td {className:'payee'},
-              e.payee,
+              e.payee + ' ',
               for tag in (e.tags or [])
                 R.span {key:tag, className:'tag'}, tag
             R.td {className:'amount'}, formatAmount(e.amount)
@@ -126,6 +126,12 @@ Filter = React.createClass
             f = (e) -> e.tags?
           else
             f = (e) -> e.tags and tok in e.tags
+        else if /^y:/.test tok
+          tok = tok.substr(2)
+          f = (e) -> e.date.substr(0, tok.length) == tok
+        else if /^>/.test tok
+          val = parseInt(tok.substr(1)) * 100
+          f = (e) -> Math.abs(e.amount) > val
         else
           r = new RegExp(tok, 'i')
           f = (e) -> r.test(e.payee)
