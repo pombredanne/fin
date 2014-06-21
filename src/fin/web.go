@@ -19,6 +19,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"sort"
 
 	"bank/qif"
@@ -82,6 +83,8 @@ func (web *web) updateTagsFromPost(r io.Reader) {
 }
 
 func (web *web) start() {
+	webLog := log.New(os.Stderr, "", log.Ldate|log.Ltime)
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			http.NotFound(w, r)
@@ -103,7 +106,10 @@ func (web *web) start() {
 	http.Handle("/static/", http.StripPrefix("/static/",
 		http.FileServer(http.Dir("build"))))
 
+	var handler http.Handler = http.DefaultServeMux
+	handler = LogHandler(webLog, handler)
+
 	addr := ":8080"
 	log.Printf("listening on %s", addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Fatal(http.ListenAndServe(addr, handler))
 }
