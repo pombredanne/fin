@@ -132,6 +132,9 @@ Filter = React.createClass
         else if /^>/.test tok
           val = parseInt(tok.substr(1)) * 100
           f = (e) -> Math.abs(e.amount) > val
+        else if /^</.test tok
+          val = parseInt(tok.substr(1)) * 100
+          f = (e) -> Math.abs(e.amount) < val
         else
           r = new RegExp(tok, 'i')
           f = (e) -> r.test(e.payee)
