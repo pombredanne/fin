@@ -186,11 +186,12 @@ Summary = React.createClass
     total = 0
 
     R.div null,
-      R.div null,
-        'dates span '
-        @props.entries[0].date
-        ' -- '
-        @props.entries[@props.entries.length - 1].date
+      if @props.entries.length > 0
+        R.div null,
+          'dates span '
+          @props.entries[0].date
+          ' -- '
+          @props.entries[@props.entries.length - 1].date
       R.div null,
         'all tags:'
         for t in @props.tags
