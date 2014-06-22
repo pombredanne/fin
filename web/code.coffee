@@ -154,7 +154,7 @@ Summary = React.createClass
   displayName: 'Summary'
 
   getInitialState: ->
-    {tags:@gatherTagsByAmount()}
+    {tags:@gatherTagsByAmount(), off:{}}
 
   # Sort tags by total amounts.
   # Returns a list of tags in descending order of amount.
@@ -178,7 +178,7 @@ Summary = React.createClass
       bucket = 'unknown'
       if e.tags
         for t in @state.tags
-          if t in e.tags
+          if not @state.off[t] and t in e.tags
             bucket = t
             break
       return bucket
@@ -204,13 +204,20 @@ Summary = React.createClass
       R.div null,
         'tags:'
         for t in @state.tags
-          R.span {className:'tag'}, t + ' '
+          R.span {className:'tag', onClick:@toggle}, t + ' '
       for b in buckets
         [amount, tag] = b
         total += amount
         R.div {key:tag}, (approx(amount) + ': ' + tag)
       '=> ' + approx(total)
 
+  toggle: (e) ->
+    tag = e.target.innerText
+    if tag of @state.off
+      delete @state.off[tag]
+    else
+      @state.off[tag] = true
+    @setState(@state)
 
 AutoC = React.createClass
   displayName: 'AutoC'
