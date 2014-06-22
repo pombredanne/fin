@@ -153,7 +153,12 @@ Filter = React.createClass
 Summary = React.createClass
   displayName: 'Summary'
 
-  compute: ->
+  getInitialState: ->
+    {tags:@gatherTagsByAmount()}
+
+  # Sort tags by total amounts.
+  # Returns a list of tags in descending order of amount.
+  gatherTagsByAmount: ->
     # Sum total amount attributed to each tag.
     tagsums = {}
     for e in @props.entries
@@ -163,12 +168,16 @@ Summary = React.createClass
     # Sort tags in order of amount.
     tagsums = d3.entries(tagsums)
     tagsums.sort((a, b) -> d3.descending(a.value, b.value))
-    tags = (t.key for t in tagsums)
+    return (t.key for t in tagsums)
 
-    chooseBucket = (e) ->
+  # Assign each entry to one of @state.tags and compute total amount
+  # in each tag.
+  # Returns a map of tag -> amount.
+  computeBuckets: ->
+    chooseBucket = (e) =>
       bucket = 'unknown'
       if e.tags
-        for t in tags
+        for t in @state.tags
           if t in e.tags
             bucket = t
             break
@@ -180,7 +189,7 @@ Summary = React.createClass
       .map(@props.entries)
 
   render: ->
-    buckets = @compute()
+    buckets = @computeBuckets()
     buckets = ([buckets[t], t] for t of buckets)
     buckets.sort((a, b) -> cmp b[0], a[0])
     total = 0
@@ -193,9 +202,9 @@ Summary = React.createClass
           ' -- '
           @props.entries[@props.entries.length - 1].date
       R.div null,
-        'all tags:'
-        for t in @props.tags
-          ' ' + t
+        'tags:'
+        for t in @state.tags
+          R.span {className:'tag'}, t + ' '
       for b in buckets
         [amount, tag] = b
         total += amount
