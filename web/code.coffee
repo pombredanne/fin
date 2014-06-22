@@ -100,7 +100,8 @@ Filter = React.createClass
   render: ->
     R.label null,
       'filter: ',
-      R.input {ref:'filter', type:'search', incremental:true, autoFocus:true}
+      R.input {ref:'filter', type:'search', size:30, \
+        incremental:true, autoFocus:true}
 
   componentDidMount: ->
     f = @refs.filter.getDOMNode()
