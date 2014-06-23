@@ -208,11 +208,20 @@ Summary = React.createClass
           if t of @state.off
             className += ' off'
           R.span {className, onClick:@toggle}, t + ' '
-      for b in buckets
-        [amount, tag] = b
-        total += amount
-        R.div {key:tag}, (approx(amount) + ': ' + tag)
-      '=> ' + approx(total)
+      R.table null,
+        R.thead null,
+          R.tr null,
+            R.th null, 'tag'
+            R.th null, 'amount'
+            R.th null, '(per month)'
+        R.tbody null,
+          for b in buckets
+            [amount, tag] = b
+            total += amount
+            R.tr {key:tag},
+              R.td null, tag
+              R.td null, approx(amount)
+      'total: ' + approx(total)
 
   toggle: (e) ->
     tag = e.target.innerText
