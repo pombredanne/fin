@@ -204,7 +204,10 @@ Summary = React.createClass
       R.div null,
         'tags:'
         for t in @state.tags
-          R.span {className:'tag', onClick:@toggle}, t + ' '
+          className = 'tag'
+          if t of @state.off
+            className += ' off'
+          R.span {className, onClick:@toggle}, t + ' '
       for b in buckets
         [amount, tag] = b
         total += amount

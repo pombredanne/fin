@@ -59,6 +59,10 @@ tr:nth-child(even) {
   -webkit-user-select: none;
 }
 
+.tag.off {
+  color: gray;
+}
+
 #graph {
   font-size: 12px;
   padding: 2ex;
