@@ -5,10 +5,11 @@ html, body {
 body {
   font-family: 'open sans', sans-serif;
   font-size: 14px;
+  margin: 2ex auto;
 }
 main {
   max-width: 100ex;
-  margin: 2ex auto;
+  margin: 0 10ex;
 }
 input {
   font-family: inherit;
