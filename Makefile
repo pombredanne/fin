@@ -14,7 +14,7 @@ build:
 build/d3.js: third_party/d3/d3.v3.min.js | build
 	cp $^ $@
 
-build/react.js: third_party/react/react-0.10.0.js | build
+build/react.js: third_party/react/react-0.11.1.js | build
 	cp $^ $@
 
 build/%.js: web/%.coffee | build
