@@ -243,7 +243,7 @@ Summary = React.createClass
           className = 'tag'
           if t of @state.off
             className += ' off'
-          R.span {className, onClick:@toggle}, t + ' '
+          R.span {key:t, className, onClick:@toggle}, t + ' '
       R.table null,
         R.thead null,
           R.tr null,
@@ -353,7 +353,7 @@ App = React.createClass
           'mode:'
           for mode in ['browse', 'chart', 'tag']
             do (mode) =>
-              R.span null,
+              R.span {key:mode},
                 ' '
                 R.a {href:'#', onClick:((e) => @viewMode(e, mode))}, mode
         R.div {className:'spacer'}
