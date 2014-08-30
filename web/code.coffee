@@ -12,6 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+class RDate
+  constructor: (@y, @m, @d) ->
+
+  @parse: (a) ->
+    [y, m, d] = a.split /\//
+    new RDate(parseInt(y), parseInt(m), parseInt(d))
+
+  str: ->
+    [d3.format('04')(@y), d3.format('02')(@m), d3.format('02')(@d)].join '/'
+
+  diff: (d) ->
+    new RDateDelta(@y-d.y, @m-d.m, @d-d.d)
+
+
+class RDateDelta
+  constructor: (@dy, @dm, @dd) ->
+    @normalize()
+
+  normalize: ->
+    if @dm < 0
+      @dy -= 1
+      @dm += 12
+    if @dd < 0
+      @dm -= 1
+      @dd += 30
+
+
 fmt = (str, args...) ->
   start = 0
   out = []
