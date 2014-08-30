@@ -121,23 +121,32 @@ Ledger = React.createClass
     @setState {col, reverse}
 
 
+SearchInput = React.createClass
+  displayName: SearchInput
+
+  render: ->
+    @transferPropsTo(R.input {ref:'i', type:'search', incremental:true})
+
+  componentDidMount: ->
+    i = @refs.i.getDOMNode()
+    i.incremental = true
+    i.addEventListener 'search', @onSearch
+    return
+
+  onSearch: ->
+    @props.onSearch(@refs.i.getDOMNode().value)
+    return
+
+
 Filter = React.createClass
   displayName: 'Filter'
 
   render: ->
     R.label null,
       'filter: ',
-      R.input {ref:'filter', type:'search', size:30, \
-        incremental:true, autoFocus:true}
+      SearchInput {size:30, autoFocus:true, onSearch:@search}
 
-  componentDidMount: ->
-    f = @refs.filter.getDOMNode()
-    f.incremental = true
-    f.addEventListener 'search', @search
-    return
-
-  search: ->
-    query = @refs.filter.getDOMNode().value
+  search: (query) ->
     @props.onSearch(@parseQuery(query))
 
   parseQuery: (query) ->
