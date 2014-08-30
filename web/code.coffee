@@ -92,7 +92,7 @@ Ledger = React.createClass
     entries.reverse() if @state.reverse
 
     total = 0
-    R.table {id:'ledger-table', cellSpacing:0},
+    R.table {className:'ledger', cellSpacing:0},
       R.thead null,
         R.tr null,
           for col, i in cols
@@ -225,9 +225,17 @@ Summary = React.createClass
       .map(@props.entries)
 
   render: ->
+    # Collect the buckets that have been toggled off.
+    offBuckets = ([t, null] for t of @state.off)
+    offBuckets.sort()
+
+    # Collect total in the buckets that are still on.
     buckets = @computeBuckets()
-    buckets = ([buckets[t], t] for t of buckets)
-    buckets.sort((a, b) -> cmp b[0], a[0])
+    buckets = ([t, buckets[t]] for t of buckets)
+    buckets.sort((a, b) -> cmp b[1], a[1])
+
+    # Join the two into the displayed bucket list.
+    allBuckets = offBuckets.concat(buckets)
     total = 0
 
     R.div null,
@@ -237,30 +245,24 @@ Summary = React.createClass
           @props.entries[0].date
           ' -- '
           @props.entries[@props.entries.length - 1].date
-      R.div null,
-        'tags:'
-        for t in @state.tags
-          className = 'tag'
-          if t of @state.off
-            className += ' off'
-          R.span {key:t, className, onClick:@toggle}, t + ' '
-      R.table null,
+      R.table {cellSpacing:0, className:'ledger'},
         R.thead null,
           R.tr null,
             R.th null, 'tag'
             R.th null, 'amount'
             R.th null, '(per month)'
         R.tbody null,
-          for b in buckets
-            [amount, tag] = b
+          for b in allBuckets
+            [tag, amount] = b
             total += amount
-            R.tr {key:tag},
-              R.td null, tag
-              R.td null, approx(amount)
+            className = 'toggle'
+            className += ' off' if tag of @state.off
+            R.tr {key:tag, className},
+              R.td {onClick:@toggle.bind(@, tag)}, tag
+              R.td null, if amount? then approx(amount) else ''
       'total: ' + approx(total)
 
-  toggle: (e) ->
-    tag = e.target.innerText
+  toggle: (tag) ->
     if tag of @state.off
       delete @state.off[tag]
     else

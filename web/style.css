@@ -24,15 +24,19 @@ header {
   flex: 1;
 }
 
-#ledger-table th {
+table.ledger th {
   white-space: nowrap;
   cursor: pointer;
 }
-#ledger-table td {
-  padding: 2px 4px;
-}
-tr:nth-child(even) {
+table.ledger tr:nth-child(even) {
   background: #f0f0f0;
+}
+tr.toggle {
+  cursor: pointer;
+}
+
+table.ledger td {
+  padding: 2px 4px;
 }
 
 .date {
@@ -59,7 +63,7 @@ tr:nth-child(even) {
   -webkit-user-select: none;
 }
 
-.tag.off {
+.off {
   color: gray;
 }
 
