@@ -334,6 +334,7 @@ AutoC = React.createClass
     @setState {text}
     return
 
+
 App = React.createClass
   displayName: 'App'
 
@@ -348,7 +349,7 @@ App = React.createClass
   render: ->
     entries = @getEntries()
 
-    R.div null,
+    R.main null,
       R.header null,
         R.div null,
           'mode:'
@@ -404,7 +405,8 @@ AppShell = React.createClass
     unless @state.entries or @state.loading
       @reload()
       return R.div()
-    App {entries:@state.entries, tags:@state.tags, reload:(=> @reload(); return)}
+    App {entries:@state.entries, tags:@state.tags, \
+         reload:(=> @reload(); return)}
 
   load: (data) ->
     entries = data.entries.sort (a, b) -> cmp a.date, b.date
@@ -434,6 +436,6 @@ AppShell = React.createClass
 
 
 init = ->
-  React.renderComponent(AppShell(), document.getElementById('main'))
+  React.renderComponent(AppShell(), document.body)
 
 init()
