@@ -55,6 +55,9 @@ cmp = (a, b) ->
   return 1 if a > b
   return 0
 
+pairs = (o) ->
+  [k, o[k]] for k of o
+
 parseDate = d3.time.format('%Y/%m/%d').parse
 formatAmount = (a) -> d3.format('$.2f')(a/100)
 approx = (amt) ->
@@ -105,7 +108,7 @@ Ledger = React.createClass
             R.td {className:'payee'},
               e.payee + ' ',
               for tag in (e.tags or [])
-                R.span {key:tag, className:'tag'}, tag
+                R.span {key:tag, className:'tag-bubble'}, tag
             R.td {className:'amount'}, formatAmount(e.amount)
         if entries.length > 0
           R.tr null,
@@ -211,13 +214,12 @@ Summary = React.createClass
   # Returns a map of tag -> amount.
   computeBuckets: ->
     chooseBucket = (e) =>
-      bucket = 'unknown'
       if e.tags
+        # Assign the largest bucket to this entry.  Go through
+        # @state.tags in order as it's sorted in order of tag size.
         for t in @state.tags
-          if not @state.off[t] and t in e.tags
-            bucket = t
-            break
-      return bucket
+          return t if t in e.tags
+      return 'unknown'
 
     d3.nest()
       .key(chooseBucket)
@@ -225,18 +227,15 @@ Summary = React.createClass
       .map(@props.entries)
 
   render: ->
-    # Collect the buckets that have been toggled off.
-    offBuckets = ([t, null] for t of @state.off)
-    offBuckets.sort()
-
-    # Collect total in the buckets that are still on.
-    buckets = @computeBuckets()
-    buckets = ([t, buckets[t]] for t of buckets)
-    buckets.sort((a, b) -> cmp b[1], a[1])
-
-    # Join the two into the displayed bucket list.
-    allBuckets = offBuckets.concat(buckets)
+    buckets = pairs(@computeBuckets())
+    buckets.sort (a, b) -> cmp b[1], a[1]
     total = 0
+    for t in buckets
+      if t[0] of @state.off
+        t[1] = null
+      else
+        total += t[1]
+    buckets.push(['total', total])
 
     R.div null,
       if @props.entries.length > 0
@@ -252,15 +251,14 @@ Summary = React.createClass
             R.th null, 'amount'
             R.th null, '(per month)'
         R.tbody null,
-          for b in allBuckets
+          for b in buckets
             [tag, amount] = b
-            total += amount
             className = 'toggle'
             className += ' off' if tag of @state.off
             R.tr {key:tag, className},
-              R.td {onClick:@toggle.bind(@, tag)}, tag
-              R.td null, if amount? then approx(amount) else ''
-      'total: ' + approx(total)
+              R.td {onClick:@toggle.bind(@, tag), className:'tag'}, tag
+              R.td {className:'amount'},
+                if amount? then approx(amount) else ''
 
   toggle: (tag) ->
     if tag of @state.off
