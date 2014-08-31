@@ -235,15 +235,21 @@ Summary = React.createClass
         t[1] = null
       else
         total += t[1]
-    buckets.push(['total', total])
+
+    if @props.entries.length > 0
+      first = @props.entries[0]
+      last = @props.entries[@props.entries.length - 1]
+
+      delta = parseDate(last.date) - parseDate(first.date)
+      deltaMonths = delta / 1000 / 60 / 60 / 24 / 365 * 12
 
     R.div null,
-      if @props.entries.length > 0
+      if first
         R.div null,
           'dates span '
-          @props.entries[0].date
+          first.date
           ' -- '
-          @props.entries[@props.entries.length - 1].date
+          last.date
       R.table {cellSpacing:0, className:'ledger'},
         R.thead null,
           R.tr null,
@@ -259,6 +265,17 @@ Summary = React.createClass
               R.td {onClick:@toggle.bind(@, tag), className:'tag'}, tag
               R.td {className:'amount'},
                 if amount? then approx(amount) else ''
+              R.td {className:'amount'},
+                if amount? then approx(amount / deltaMonths) else ''
+          if total
+            R.tr {key:tag},
+              R.td null, 'total'
+              R.td {className:'amount'},
+                approx(total) if total
+              R.td {className:'amount'},
+                if amount and deltaMonths
+                  approx(total / deltaMonths)
+
 
   toggle: (tag) ->
     if tag of @state.off
