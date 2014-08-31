@@ -255,7 +255,8 @@ Summary = React.createClass
           R.tr null,
             R.th null, 'tag'
             R.th null, 'amount'
-            R.th null, '(per month)'
+            R.th null, 'per month'
+            R.th null, '%'
         R.tbody null,
           for b in buckets
             [tag, amount] = b
@@ -264,9 +265,11 @@ Summary = React.createClass
             R.tr {key:tag, className},
               R.td {onClick:@toggle.bind(@, tag), className:'tag'}, tag
               R.td {className:'amount'},
-                if amount? then approx(amount) else ''
+                approx(amount) if amount?
               R.td {className:'amount'},
-                if amount? then approx(amount / deltaMonths) else ''
+                approx(amount / deltaMonths) if amount?
+              R.td {className:'amount'},
+                (100 * amount / total).toFixed(0) + '%' if amount?
           if total
             R.tr {key:tag},
               R.td null, 'total'

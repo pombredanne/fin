@@ -50,10 +50,11 @@ table.ledger td.tag {
 }
 .payee {
 }
-.amount {
+table.ledger td.amount {
   text-align: right;
   vertical-align: top;
   white-space: nowrap;
+  min-width: 8ex;
 }
 
 .tag-bubble {
