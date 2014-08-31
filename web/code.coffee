@@ -97,7 +97,7 @@ Ledger = React.createClass
     total = 0
     R.table {className:'ledger', cellSpacing:0},
       R.thead null,
-        R.tr null,
+        R.tr {className:'clickable'},
           for col, i in cols
             R.th {key:i, onClick:@sort}, col.name
       R.tbody null,
@@ -237,6 +237,8 @@ Summary = React.createClass
         total += t[1]
 
     if @props.entries.length > 0
+      @props.entries.sort (a, b) -> cmp a.date, b.date
+
       first = @props.entries[0]
       last = @props.entries[@props.entries.length - 1]
 
@@ -260,10 +262,10 @@ Summary = React.createClass
         R.tbody null,
           for b in buckets
             [tag, amount] = b
-            className = 'toggle'
-            className += ' off' if tag of @state.off
+            className = ''
+            className = 'off' if tag of @state.off
             R.tr {key:tag, className},
-              R.td {onClick:@toggle.bind(@, tag), className:'tag'}, tag
+              R.td {onClick:@toggle.bind(@, tag), className:'tag clickable'}, tag
               R.td {className:'amount'},
                 approx(amount) if amount?
               R.td {className:'amount'},

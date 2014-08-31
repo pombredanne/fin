@@ -25,15 +25,15 @@ header {
   flex: 1;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 table.ledger th {
   white-space: nowrap;
-  cursor: pointer;
 }
 table.ledger tr:nth-child(even) {
   background: #f0f0f0;
-}
-tr.toggle {
-  cursor: pointer;
 }
 
 table.ledger td {
