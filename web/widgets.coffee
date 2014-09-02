@@ -106,5 +106,3 @@ SearchInput = React.createClass
   onSearch: ->
     @props.onSearch(@refs.i.getDOMNode().value)
     return
-
-
