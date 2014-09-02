@@ -106,3 +106,40 @@ SearchInput = React.createClass
   onSearch: ->
     @props.onSearch(@refs.i.getDOMNode().value)
     return
+
+
+# An input field for picking dates.
+# props:
+#   text: string, text of the field (editable)
+#   onCommit: function(text), called when the user commits to a new valid date
+DatePicker = React.createClass
+  displayName: 'DatePicker'
+
+  getInitialState: -> {text:@props.text}
+
+  render: ->
+    R.input {value:@state.text, size:9, \
+             onChange:@onChange, onKeyUp:@onKeyUp, onBlur:@finish}
+
+  onChange: (e) ->
+    @setState {text:e.target.value}
+    return
+
+  onKeyUp: (e) ->
+    switch e.keyCode
+      when 13  # enter
+        @finish()
+      when 27  # esc
+        @setState text:@props.text
+    return
+
+  finish: ->
+    return unless @state.text != @props.text
+    date = RDate.parse(@state.text)
+    if date.y and date.m and date.d
+      text = RDate.parse(@state.text).str()
+      @props.onCommit(text)
+    else
+      text = @props.text
+    @setState {text:text}
+    return

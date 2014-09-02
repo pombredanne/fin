@@ -119,7 +119,13 @@ Summary = React.createClass
   displayName: 'Summary'
 
   getInitialState: ->
-    {tags:@gatherTagsByAmount(), off:{}}
+    @props.entries.sort (a, b) -> cmp a.date, b.date
+
+    first = @props.entries[0]
+    last = @props.entries[@props.entries.length - 1]
+
+    {tags:@gatherTagsByAmount(), off:{}, \
+     firstDate:first.date, lastDate:last.date}
 
   # Sort tags by total amounts.
   # Returns a list of tags in descending order of amount.
@@ -153,6 +159,9 @@ Summary = React.createClass
       .map(@props.entries)
 
   render: ->
+    delta = parseDate(@state.lastDate) - parseDate(@state.firstDate)
+    deltaMonths = delta / 1000 / 60 / 60 / 24 / 365 * 12
+
     buckets = pairs(@computeBuckets())
     buckets.sort (a, b) -> cmp b[1], a[1]
     total = 0
@@ -162,22 +171,13 @@ Summary = React.createClass
       else
         total += t[1]
 
-    if @props.entries.length > 0
-      @props.entries.sort (a, b) -> cmp a.date, b.date
-
-      first = @props.entries[0]
-      last = @props.entries[@props.entries.length - 1]
-
-      delta = parseDate(last.date) - parseDate(first.date)
-      deltaMonths = delta / 1000 / 60 / 60 / 24 / 365 * 12
-
     R.div null,
-      if first
+      if @state.firstDate
         R.div null,
           'dates span '
-          first.date
-          ' -- '
-          last.date
+          DatePicker {text:@state.firstDate, onCommit:@onDate.bind(@, 0)}
+          ' \u2013 '
+          DatePicker {text:@state.lastDate, onCommit:@onDate.bind(@, 1)}
       R.table {cellSpacing:0, className:'ledger'},
         R.thead null,
           R.tr null,
@@ -214,6 +214,13 @@ Summary = React.createClass
     else
       @state.off[tag] = true
     @setState(@state)
+    return
+
+  onDate: (which, text) ->
+    switch which
+      when 0 then @setState {firstDate:text}
+      when 1 then @setState {lastDate:text}
+    return
 
 
 App = React.createClass
