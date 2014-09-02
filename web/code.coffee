@@ -12,65 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class RDate
-  constructor: (@y, @m, @d) ->
-
-  @parse: (a) ->
-    [y, m, d] = a.split /\//
-    new RDate(parseInt(y), parseInt(m), parseInt(d))
-
-  str: ->
-    [d3.format('04')(@y), d3.format('02')(@m), d3.format('02')(@d)].join '/'
-
-  diff: (d) ->
-    new RDateDelta(@y-d.y, @m-d.m, @d-d.d)
-
-
-class RDateDelta
-  constructor: (@dy, @dm, @dd) ->
-    @normalize()
-
-  normalize: ->
-    if @dm < 0
-      @dy -= 1
-      @dm += 12
-    if @dd < 0
-      @dm -= 1
-      @dd += 30
-
-
-fmt = (str, args...) ->
-  start = 0
-  out = []
-  for i in [0..str.length]
-    if i == str.length or str[i] == '$'
-      out.push(str.substr(start, i - start))
-      start = i + 1
-      if str[i] == '$'
-        out.push(args.shift())
-  return out.join('')
-
-cmp = (a, b) ->
-  return -1 if a < b
-  return 1 if a > b
-  return 0
-
-pairs = (o) ->
-  [k, o[k]] for k of o
-
 parseDate = d3.time.format('%Y/%m/%d').parse
 formatAmount = (a) -> d3.format('$.2f')(a/100)
-approx = (amt) ->
-  prefix = '$'
-  dollars = parseInt(amt / 100)
-  if dollars < 0
-    dollars = -dollars
-    prefix += '-'
-  if dollars > 1000
-    return prefix + (dollars / 1000).toFixed(1) + 'k'
-  else
-    return prefix + dollars
-
 
 R = React.DOM
 
@@ -122,23 +65,6 @@ Ledger = React.createClass
     if col == @state.col
       reverse = !reverse
     @setState {col, reverse}
-
-
-SearchInput = React.createClass
-  displayName: SearchInput
-
-  render: ->
-    @transferPropsTo(R.input {ref:'i', type:'search', incremental:true})
-
-  componentDidMount: ->
-    i = @refs.i.getDOMNode()
-    i.incremental = true
-    i.addEventListener 'search', @onSearch
-    return
-
-  onSearch: ->
-    @props.onSearch(@refs.i.getDOMNode().value)
-    return
 
 
 Filter = React.createClass
@@ -288,73 +214,6 @@ Summary = React.createClass
     else
       @state.off[tag] = true
     @setState(@state)
-
-
-AutoC = React.createClass
-  displayName: 'AutoC'
-
-  getInitialState: -> {sel:null, text:'', focus:false}
-
-  render: ->
-    words = @state.text.split(/\s+/)
-    word = words[words.length - 1]
-    @filteredOptions = @props.options.filter (opt) ->
-      word.length > 0 and opt.indexOf(word) == 0
-
-    R.div {className:'autoc'},
-      R.input {ref:'input', autoComplete:false, onChange:@onChange, onKeyDown:@onKeyDown, onFocus:@onFocus, onBlur:@onBlur, value:@state.text}
-      if @filteredOptions.length > 0 and @state.focus
-        R.div {className:'dropdown'},
-          for o, i in @filteredOptions
-            className = 'item'
-            className += ' sel' if i == @state.sel
-            do (o) =>
-              R.div {key:i, className, onMouseDown:(=> @complete(o); return)},
-                o
-
-  onChange: ->
-    text = @refs.input.getDOMNode().value
-    @setState {text}
-    return
-
-  onKeyDown: (e) ->
-    return if e.shiftKey or e.altKey or e.metaKey
-    sel = @state.sel
-    if e.key == 'ArrowDown' or e.key == 'Tab'
-      sel = if sel? then sel + 1 else 0
-    else if e.key == 'ArrowUp'
-      sel-- if sel?
-    else if e.key == 'Enter'
-      if sel?
-        @complete(@filteredOptions[sel])
-        sel = null
-      else if @props.onCommit
-        if @props.onCommit(@state.text)
-          @setState {text:''}
-    else
-      return
-    e.preventDefault()
-    sel = null unless @filteredOptions.length
-    if sel?
-      sel = 0 if sel < 0
-      sel = @filteredOptions.length - 1 if sel >= @filteredOptions.length
-    @setState {sel}
-    return
-
-  onFocus: ->
-    @setState {focus:true}
-    return
-
-  onBlur: ->
-    @setState {sel:null, focus:false}
-    return
-
-  complete: (text) ->
-    words = @state.text.split(/\s+/)
-    words[words.length - 1] = text
-    text = words.join(' ') + ' '
-    @setState {text}
-    return
 
 
 App = React.createClass

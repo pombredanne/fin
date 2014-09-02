@@ -1,7 +1,7 @@
 JS := ../mutext/node_modules/.bin
 COFFEE ?= $(JS)/coffee
 
-JSFILES = d3 react code
+JSFILES = d3 react util widgets code
 
 .PHONY: all test clean
 
