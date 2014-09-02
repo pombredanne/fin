@@ -31,23 +31,26 @@ type web struct {
 	entries  []*qif.Entry
 }
 
+type jsonObj map[string]interface{}
+
 func (web *web) toJson(w io.Writer) {
-	var jentries []map[string]interface{}
+	var jentries []jsonObj
 	for _, e := range web.entries {
-		je := make(map[string]interface{})
 		id := qifId(e)
-		je["id"] = id
-		je["number"] = e.Number
-		je["date"] = e.Date.Format("2006/01/02")
-		je["amount"] = e.Amount
-		je["payee"] = e.Payee
-		je["addr"] = e.Address
+		je := jsonObj{
+			"id":     id,
+			"number": e.Number,
+			"date":   e.Date.Format("2006/01/02"),
+			"amount": e.Amount,
+			"payee":  e.Payee,
+			"addr":   e.Address,
+		}
 		if tags, ok := web.tags[id]; ok {
 			je["tags"] = tags
 		}
 		jentries = append(jentries, je)
 	}
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	json.NewEncoder(w).Encode(jsonObj{
 		"entries": jentries,
 	})
 }
