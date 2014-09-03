@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+R = React.DOM
+
+parseDate = d3.time.format('%Y/%m/%d').parse
+formatAmount = (a) -> d3.format('$.2f')(a/100)
+
 class RDate
   constructor: (@y, @m, @d) ->
 

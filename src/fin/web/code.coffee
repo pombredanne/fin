@@ -12,11 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-parseDate = d3.time.format('%Y/%m/%d').parse
-formatAmount = (a) -> d3.format('$.2f')(a/100)
-
-R = React.DOM
-
 Ledger = React.createClass
   displayName: 'Ledger'
 

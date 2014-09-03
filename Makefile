@@ -1,15 +1,16 @@
-JS := ../mutext/node_modules/.bin
-COFFEE ?= $(JS)/coffee
+JSBIN := ../mutext/node_modules/.bin
+COFFEE ?= $(JSBIN)/coffee
 
-JSFILES = d3 react util widgets code
+JS = util widgets code
+BUILT := d3.js react.js fin.js open-sans.css style.css view.html \
+  open-sans-bold.woff open-sans-italic.woff open-sans.woff
 
 .PHONY: all test clean
 
-all: $(JSFILES:%=build/%.js) build/style.css build/view.html fin
+all: $(BUILT:%=build/%) fin
 
 build:
-	mkdir -p build
-	cp static/* build
+	mkdir build
 
 build/d3.js: third_party/d3/d3.v3.min.js | build
 	cp $^ $@
@@ -17,16 +18,13 @@ build/d3.js: third_party/d3/d3.v3.min.js | build
 build/react.js: third_party/react/react-0.11.1.js | build
 	cp $^ $@
 
-build/%.js: web/%.coffee | build
-	$(COFFEE) -o build -b -c $<
+build/fin.js: $(JS:%=src/fin/web/%.coffee) | build
+	cat $^ | $(COFFEE) -c -s > $@
 
-build/style.css: web/style.css
+build/%: src/fin/web/% | build
 	cp $^ $@
 
-build/view.html: web/view.html
-	cp $^ $@
-
-fin: src/* src/*/*
+fin: src/*/*.go
 	GOPATH=`pwd` go build fin
 
 test:
