@@ -133,8 +133,8 @@ TagView = React.createClass
     return true
 
 
-Summary = React.createClass
-  displayName: 'Summary'
+SummaryView = React.createClass
+  displayName: 'SummaryView'
 
   getInitialState: ->
     @props.entries.sort (a, b) -> cmp a.date, b.date
@@ -268,7 +268,7 @@ App = React.createClass
         Filter {onSearch:@onSearch}
       switch @state.mode
         when 'browse'
-          Summary {tags:@props.tags, entries}
+          SummaryView {tags:@props.tags, entries}
         when 'tag'
           TagView {tags:@props.tags, entries, reload:@props.reload}
         when 'chart'
