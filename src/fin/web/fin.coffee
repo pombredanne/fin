@@ -110,6 +110,29 @@ Filter = React.createClass
       return true
 
 
+TagView = React.createClass
+  displayName: 'TagView'
+
+  render: ->
+    R.div null,
+      R.div null,
+        'tag: '
+        AutoC {options:@props.tags, onCommit:@onTag}
+      Ledger {entries:@props.entries}
+
+  onTag: (text) ->
+    data =
+      tags: text.split(/\s+/)
+      ids: (entry.id for entry in @props.entries)
+
+    req = new XMLHttpRequest()
+    req.onload = () => @props.reload()
+    req.open('post', '/')
+    req.send(JSON.stringify(data))
+
+    return true
+
+
 Summary = React.createClass
   displayName: 'Summary'
 
@@ -247,11 +270,7 @@ App = React.createClass
         when 'browse'
           Summary {tags:@props.tags, entries}
         when 'tag'
-          R.div null,
-            R.div null,
-              'tag: '
-              AutoC {options:@props.tags, onCommit:@onTag}
-            Ledger {entries}
+          TagView {tags:@props.tags, entries, reload:@props.reload}
         when 'chart'
           null
 
@@ -263,20 +282,6 @@ App = React.createClass
   onSearch: (search) ->
     @setState {search}
     return
-
-  onTag: (text) ->
-    entries = @getEntries()
-
-    data =
-      tags: text.split(/\s+/)
-      ids: (entry.id for entry in entries)
-
-    req = new XMLHttpRequest()
-    req.onload = () => @props.reload()
-    req.open('post', '/')
-    req.send(JSON.stringify(data))
-
-    return true
 
 
 AppShell = React.createClass
