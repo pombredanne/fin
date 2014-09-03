@@ -1,7 +1,7 @@
 JSBIN := ../mutext/node_modules/.bin
 COFFEE ?= $(JSBIN)/coffee
 
-JS = util widgets code
+JS = util widgets fin
 BUILT := d3.js react.js fin.js open-sans.css style.css view.html \
   open-sans-bold.woff open-sans-italic.woff open-sans.woff
 
