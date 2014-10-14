@@ -133,6 +133,31 @@ TagView = React.createClass
     return true
 
 
+ChartView = React.createClass
+  displayName: 'ChartView'
+
+  dims:
+    svg: {width: 500, height: 250}
+    margin: {top: 5, right: 0, bottom: 25, left: 60}
+    # graph:
+    #   width: dims.svg.width - dims.margin.left - dims.margin.right
+    #   height: dims.svg.height - dims.margin.top - dims.margin.bottom
+
+  render: ->
+    transform = fmt('translate($,$)', @dims.margin.left, @dims.margin.top)
+    R.svg {width:@svg.width, height:@svg.height},
+      R.g {ref:'g', transform}
+
+  d3render: (props) ->
+    area = d3.svg.area()
+    d3.select(@refs.g.getDOMNode())
+
+  componentDidMount: ->
+    @d3render @props
+
+  componentWillUpdate: (nextProps, nextState) ->
+    @d3render nextProps
+
 SummaryView = React.createClass
   displayName: 'SummaryView'
 
@@ -272,7 +297,7 @@ App = React.createClass
         when 'tag'
           TagView {tags:@props.tags, entries, reload:@props.reload}
         when 'chart'
-          null
+          ChartView {entries}
 
   viewMode: (e, mode) ->
     e.preventDefault()
